@@ -1,0 +1,3 @@
+sealed class StackPointer : Register {
+
+}

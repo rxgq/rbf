@@ -1,0 +1,3 @@
+sealed class ProgramCounter : Register {
+
+}
