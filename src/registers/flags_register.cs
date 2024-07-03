@@ -1,3 +1,0 @@
-sealed class FlagsRegister : Register {
-
-}
