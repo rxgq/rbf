@@ -1,6 +1,9 @@
-namespace cpu;
+using cpu.src.components;
 
-public abstract class LogicGate {
+namespace cpu.src.gates;
+
+public abstract class LogicGate
+{
     public List<Wire> Inputs { get; set; } = new();
     public Wire Output { get; set; } = new();
 

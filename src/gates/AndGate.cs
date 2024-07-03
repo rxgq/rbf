@@ -1,4 +1,4 @@
-﻿namespace cpu.src;
+﻿namespace cpu.src.gates;
 
 public class AndGate : LogicGate
 {

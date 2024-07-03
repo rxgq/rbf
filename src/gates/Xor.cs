@@ -1,4 +1,4 @@
-﻿namespace cpu.src;
+﻿namespace cpu.src.gates;
 
 internal class XorGate : LogicGate
 {
@@ -15,7 +15,7 @@ internal class XorGate : LogicGate
                 trueCount++;
         }
 
-        bool outputSignal = (trueCount % 2 != 0);
+        bool outputSignal = trueCount % 2 != 0;
         Output.Transistor.SwitchTo(outputSignal);
     }
 }

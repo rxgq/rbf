@@ -1,4 +1,4 @@
-using cpu;
+using cpu.src.gates;
 
 class NotGate : LogicGate {
     
