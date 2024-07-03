@@ -1,3 +1,3 @@
-abstract class Register {
-    public int Value { get; set; }
+abstract class Register() {
+
 }
