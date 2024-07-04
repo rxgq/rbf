@@ -4,7 +4,7 @@ namespace eval;
 
 internal class Program {
     static void Main() {
-        var expression = "1 + 2 * 4";
+        var expression = "2 * 2 / 4 + 2 + 2.2 * 2";
 
         var lexer = new Lexer(expression);
         var tokens = lexer.Tokenize();

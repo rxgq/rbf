@@ -8,7 +8,7 @@ internal class BinaryExpr(Expr left, Expr right, Token op) : Expr {
     public Token Op { get; } = op;
 
     public override string ToString() {
-        return $"({Op.Value} {Left} {Right})";
+        return $"({Left} {Op.Value} {Right})";
     }
 }
 
