@@ -1,13 +1,14 @@
-﻿using cpu.src;
+﻿using eval.src;
 
-namespace cpu.src.components;
+namespace eval;
 
-class Program {
+internal class Program {
     static void Main() {
-        var num1 = "01100111";
-        var num2 = "11100011";
-        var fullAdder8 = new FullAdder8(num1, num2);
-        fullAdder8.Run();
+        var expression = "(1 + 2) * 4";
 
+        var eval = new Evaluator(expression);
+        var tokens = eval.Evaluate();
+
+        foreach (var token in tokens) Console.Write(token.ToString());
     }
 }
