@@ -1,6 +1,7 @@
 namespace eval.src;
 
-internal class Token(TokenType type, object value) {
+internal class Token(TokenType type, object value) 
+{
     public TokenType Type { get; set; } = type;
     public object Value { get; set; } = value;
 
@@ -8,10 +9,12 @@ internal class Token(TokenType type, object value) {
         => $"Token: ({Type,-14} | {Value,-4})\n";
 }
 
-public enum TokenType {
+public enum TokenType
+{
     OP,
     NUMBER,
     LEFT_PAREN,
     RIGHT_PAREN,
+    EOF,
     BAD
 }

@@ -4,11 +4,18 @@ namespace eval;
 
 internal class Program {
     static void Main() {
-        var expression = "(1 + 2) * 4";
+        var expression = "1 + 2 * 4";
 
-        var eval = new Evaluator(expression);
-        var tokens = eval.Evaluate();
+        var lexer = new Lexer(expression);
+        var tokens = lexer.Tokenize();
 
-        foreach (var token in tokens) Console.Write(token.ToString());
+        var parser = new Parser(tokens);
+        var exprs = parser.Parse();
+
+        foreach (var expr in exprs)
+            Console.Write(expr.ToString());
+
+        // foreach (var token in tokens) 
+        //     Console.Write(token.ToString());
     }
 }

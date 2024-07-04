@@ -1,20 +1,23 @@
 namespace eval.src;
-internal class Evaluator(string source) {
-    
+
+internal class Lexer(string source) 
+{
     public string Source { get; set; } = source;
     public int Current { get; set; } = 0;
     public int Start { get; set; }
     public List<Token> Tokens { get; set; } = [];
 
-    public List<Token> Evaluate() {
-        while (!IsEnd()) {
+    public List<Token> Tokenize() 
+    {
+        while (!IsEnd()) 
+        {
             Start = Current;
             Tokens.Add(NextToken());
 
             Current++;
         }
 
-        return Tokens;
+        return Tokens.Where(e => e.Type != TokenType.BAD).ToList();
     }
 
     private Token NextToken()
