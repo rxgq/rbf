@@ -11,36 +11,36 @@ typedef enum {
 
 typedef struct {
     TokenType type;
-    char value;
+    char *value;
 } Token;
 
 int token_count = 0;
 
 void next_token(char c, Token** tokens_ptr) {
     TokenType type;
+    char *value = (char *)malloc(2 * sizeof(char));
 
     if (c == '+') {
         type = PLUS;
+        value[0] = c;
     } else if (c == '-') {
         type = MINUS;
+        value[0] = c;
     } else if (c == '*') {
         type = STAR;
+        value[0] = c;
     } else if (c == '/') {
         type = SLASH;
+        value[0] = c;
     } else {
         type = BAD;
+        value[0] = NULL;
     }
 
-    if (token_count >= 10) {
-        *tokens_ptr = realloc(*tokens_ptr, (token_count + 10) * sizeof(Token));
-        if (!(*tokens_ptr)) {
-            perror("realloc failed");
-            exit(1);
-        }
-    }
+    value[1] = '\0';
 
     (*tokens_ptr)[token_count].type = type;
-    (*tokens_ptr)[token_count].value = c; 
+    (*tokens_ptr)[token_count].value = value; 
 
     token_count++;
 }
@@ -49,7 +49,7 @@ Token* tokenize(char* cptr, int sz) {
     Token* tokens = (Token *)malloc(10 * sizeof(Token));
 
     int current = -1;
-    while (current < sz) {
+    while (current < sz - 1) {
         current += 1;
         char c = cptr[current];
         
@@ -62,22 +62,22 @@ Token* tokenize(char* cptr, int sz) {
 void token_out(TokenType type, Token* tokens, int i) {
     switch (type) {
         case PLUS:
-            printf("%d: PLUS (%c)\n", i, tokens[i].value);
+            printf("%d: PLUS (%s)\n", i, tokens[i].value);
             break;
         case MINUS:
-            printf("%d: MINUS (%c)\n", i, tokens[i].value);
+            printf("%d: MINUS (%s)\n", i, tokens[i].value);
             break;
         case STAR:
-            printf("%d: STAR (%c)\n", i, tokens[i].value);
+            printf("%d: STAR (%s)\n", i, tokens[i].value);
             break;
         case SLASH:
-            printf("%d: SLASH (%c)\n", i, tokens[i].value);
+            printf("%d: SLASH (%s)\n", i, tokens[i].value);
             break;
         case BAD:
-            printf("%d: BAD (%c)\n", i, tokens[i].value);
+            printf("%d: BAD (%s)\n", i, tokens[i].value);
             break;
         default:
-            printf("%d: UNKNOWN (%c)\n", i, tokens[i].value);
+            printf("%d: UNKNOWN (%s)\n", i, tokens[i].value);
             break;
     }
 }
