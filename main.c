@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 typedef enum {
     PLUS,
     MINUS,
     STAR,
     SLASH,
+    NUMBER,
     BAD,
 } TokenType;
 
@@ -15,8 +17,22 @@ typedef struct {
 } Token;
 
 int token_count = 0;
+int current = -1;
 
-void next_token(char c, Token** tokens_ptr) {
+void tokenize_number(char c, char* value, char* cptr) {
+    char* digits = (char *)malloc(64 * sizeof(char));
+    int number_length = 0;
+
+    while (isdigit(cptr[current])) {
+        number_length++;
+        digits[number_length] = cptr[current];
+        current++;
+    }
+
+    printf("%s", digits);
+}
+
+void next_token(char c, Token** tptr, char* cptr) {
     TokenType type;
     char *value = (char *)malloc(2 * sizeof(char));
 
@@ -32,15 +48,18 @@ void next_token(char c, Token** tokens_ptr) {
     } else if (c == '/') {
         type = SLASH;
         value[0] = c;
+    } else if (isdigit(c)) {
+        type = NUMBER;
+        tokenize_number(c, value, cptr);
     } else {
         type = BAD;
-        value[0] = NULL;
+        value[0] = ' ';
     }
 
     value[1] = '\0';
 
-    (*tokens_ptr)[token_count].type = type;
-    (*tokens_ptr)[token_count].value = value; 
+    (*tptr)[token_count].type = type;
+    (*tptr)[token_count].value = value; 
 
     token_count++;
 }
@@ -48,12 +67,11 @@ void next_token(char c, Token** tokens_ptr) {
 Token* tokenize(char* cptr, int sz) {
     Token* tokens = (Token *)malloc(10 * sizeof(Token));
 
-    int current = -1;
     while (current < sz - 1) {
         current += 1;
         char c = cptr[current];
         
-        next_token(c, &tokens);
+        next_token(c, &tokens,  cptr);
     }
 
     return tokens;
@@ -75,6 +93,9 @@ void token_out(TokenType type, Token* tokens, int i) {
             break;
         case BAD:
             printf("%d: BAD (%s)\n", i, tokens[i].value);
+            break;
+        case NUMBER:
+            printf("%d: NUMBER (%s)\n", i, tokens[i].value);
             break;
         default:
             printf("%d: UNKNOWN (%s)\n", i, tokens[i].value);
