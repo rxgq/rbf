@@ -19,47 +19,63 @@ typedef struct {
 int token_count = 0;
 int current = -1;
 
-void tokenize_number(char c, char* value, char* cptr) {
+void tokenize_number(Token* tokens, char* cptr) {
     char* digits = (char *)malloc(64 * sizeof(char));
     int number_length = 0;
 
     while (isdigit(cptr[current])) {
-        number_length++;
         digits[number_length] = cptr[current];
+        number_length++;
         current++;
     }
+    current--;
 
-    printf("%s", digits);
+    digits[number_length] = '\0';
+    tokens[token_count].value = digits;
 }
 
-void next_token(char c, Token** tptr, char* cptr) {
+void add_token() {
+    
+}
+
+void next_token(char c, Token* tokens, char* cptr) {
     TokenType type;
-    char *value = (char *)malloc(2 * sizeof(char));
+    char *value = NULL;
 
     if (c == '+') {
         type = PLUS;
+        value = (char *)malloc(2 * sizeof(char));
         value[0] = c;
+        value[1] = '\0';
     } else if (c == '-') {
         type = MINUS;
+        value = (char *)malloc(2 * sizeof(char));
         value[0] = c;
+        value[1] = '\0';
     } else if (c == '*') {
         type = STAR;
+        value = (char *)malloc(2 * sizeof(char));
         value[0] = c;
+        value[1] = '\0';
     } else if (c == '/') {
         type = SLASH;
+        value = (char *)malloc(2 * sizeof(char));
         value[0] = c;
+        value[1] = '\0';
     } else if (isdigit(c)) {
         type = NUMBER;
-        tokenize_number(c, value, cptr);
+        tokenize_number(tokens, cptr);
     } else {
         type = BAD;
+        value = (char *)malloc(2 * sizeof(char));
         value[0] = ' ';
+        value[1] = '\0';
     }
 
-    value[1] = '\0';
-
-    (*tptr)[token_count].type = type;
-    (*tptr)[token_count].value = value; 
+    tokens[token_count].type = type;
+    if (type != NUMBER) {
+        tokens[token_count].value = value;
+    }
 
     token_count++;
 }
@@ -71,7 +87,7 @@ Token* tokenize(char* cptr, int sz) {
         current += 1;
         char c = cptr[current];
         
-        next_token(c, &tokens,  cptr);
+        next_token(c, tokens, cptr);
     }
 
     return tokens;
@@ -107,8 +123,8 @@ int main(int argc, char *argv[]) {
     FILE *fptr = NULL;
     char* buff = NULL;
 
-    if (argv[1] == NULL) {
-        printf("Usage: ./main.exe <path_to_your_code>");
+    if (argc < 2) {
+        printf("Usage: ./main <path_to_your_code>\n");
         return 1;
     } 
 
@@ -133,6 +149,11 @@ int main(int argc, char *argv[]) {
     
     fclose(fptr);
     free(buff);
+
+    for (int i = 0; i < token_count; i++) {
+        free(tokens[i].value);
+    }
+    free(tokens);
 
     return 0;
 }
