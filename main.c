@@ -19,7 +19,7 @@ typedef struct {
 int token_count = 0;
 int current = -1;
 
-void tokenize_number(Token* tokens, char* cptr) {
+void add_number_token(Token* tokens, char* cptr) {
     char* digits = (char *)malloc(64 * sizeof(char));
     int number_length = 0;
 
@@ -28,60 +28,53 @@ void tokenize_number(Token* tokens, char* cptr) {
         number_length++;
         current++;
     }
+
     current--;
 
     digits[number_length] = '\0';
+
     tokens[token_count].value = digits;
+    tokens[token_count].type = NUMBER;
 }
 
-void add_token() {
-    
+void add_token(char** value, char c, TokenType type, Token* tokens) {
+    *value = (char *)malloc(2 * sizeof(char));
+    (* value)[0] = c;
+    (* value)[1] = '\0';
+
+    tokens[token_count].type = type;
+    tokens[token_count].value = *value;
 }
 
-void next_token(char c, Token* tokens, char* cptr) {
+void next_token(char c, Token *tokens, char *cptr) {
     TokenType type;
     char *value = NULL;
 
     if (c == '+') {
         type = PLUS;
-        value = (char *)malloc(2 * sizeof(char));
-        value[0] = c;
-        value[1] = '\0';
+        add_token(&value, c, type, tokens);
     } else if (c == '-') {
         type = MINUS;
-        value = (char *)malloc(2 * sizeof(char));
-        value[0] = c;
-        value[1] = '\0';
+        add_token(&value, c, type, tokens);
     } else if (c == '*') {
         type = STAR;
-        value = (char *)malloc(2 * sizeof(char));
-        value[0] = c;
-        value[1] = '\0';
+        add_token(&value, c, type, tokens);
     } else if (c == '/') {
         type = SLASH;
-        value = (char *)malloc(2 * sizeof(char));
-        value[0] = c;
-        value[1] = '\0';
+        add_token(&value, c, type, tokens);
     } else if (isdigit(c)) {
         type = NUMBER;
-        tokenize_number(tokens, cptr);
+        add_number_token(tokens, cptr);
     } else {
         type = BAD;
-        value = (char *)malloc(2 * sizeof(char));
-        value[0] = ' ';
-        value[1] = '\0';
-    }
-
-    tokens[token_count].type = type;
-    if (type != NUMBER) {
-        tokens[token_count].value = value;
+        add_token(&value, c, type, tokens);
     }
 
     token_count++;
 }
 
 Token* tokenize(char* cptr, int sz) {
-    Token* tokens = (Token *)malloc(10 * sizeof(Token));
+    Token* tokens = (Token *)malloc(100 * sizeof(Token));
 
     while (current < sz - 1) {
         current += 1;
@@ -153,6 +146,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < token_count; i++) {
         free(tokens[i].value);
     }
+        
     free(tokens);
 
     return 0;
