@@ -1,6 +1,8 @@
 use std::env;
 use std::fs;
 
+use compiler::Compiler;
+use compiler::CompilerOptions;
 use lexer::Lexer;
 use parser::Parser;
 use utils::map_compiler_mode;
@@ -42,10 +44,21 @@ fn main() {
     let mut lexer = Lexer::new(mode, source);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
-        Err(_)     => return
+        Err(_)     => {
+            println!("\nFailed to compile application.");
+            return;
+        }
     };
 
     let mut parser = Parser::new(mode, tokens);
-    parser.parse();
-    
+    let ast = match parser.parse() {
+        Ok(ast) => ast,
+        Err(_)    => return
+    };
+
+    let options = CompilerOptions {};
+    let compiler = Compiler::new(options, ast);
+    compiler.compile();
+
+
 }

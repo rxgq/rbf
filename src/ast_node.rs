@@ -14,12 +14,12 @@ pub enum ASTNode {
 impl Display for ASTNode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::IncPtrNode  => write!(f, "IncPtrNode"),
-            Self::DecPtrNode  => write!(f, "DecPtrNode"),
-            Self::IncValNode  => write!(f, "IncValNode"),
-            Self::DecValNode  => write!(f, "DecValNode"),
-            Self::InputNode   => write!(f, "InputNode"),
-            Self::OutputNode  => write!(f, "OutputNode"),
+            Self::IncPtrNode  => write!(f, "Node(>)"),
+            Self::DecPtrNode  => write!(f, "Node(<)"),
+            Self::IncValNode  => write!(f, "Node(+)"),
+            Self::DecValNode  => write!(f, "Node(-)"),
+            Self::OutputNode  => write!(f, "Node(.)"),
+            Self::InputNode   => write!(f, "Node(,)"),
             Self::Loop(nodes) => {
                 write!(f, "Loop(")?;
 
@@ -31,6 +31,19 @@ impl Display for ASTNode {
                 }
                 write!(f, ")")
             }
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct AST {
+    pub body: Vec<ASTNode>,
+}
+
+impl AST {
+    pub fn new() -> AST {
+        AST { 
+            body: Vec::new() 
         }
     }
 }

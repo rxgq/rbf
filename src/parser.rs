@@ -1,67 +1,55 @@
-use core::panic;
+use crate::{ast_node::{ASTNode, AST}, lexer::CompilerMode, token::Token};
 
-use crate::{ast_node::ASTNode, lexer::CompilerMode, token::Token};
-
-
+#[derive(Clone)]
 pub struct Parser {
+    program: AST,
     mode: CompilerMode,
     tokens: Vec<Token>,
-    nodes: Vec<ASTNode>
 }
 
 impl Parser {
     pub fn new(mode: CompilerMode, tokens: Vec<Token>) -> Parser {
-        Parser { 
+        Parser {
+            program: AST::new(),
             mode,
             tokens,
-            nodes: Vec::new()
         }
     }
 
-    pub fn parse(&mut self) -> Vec<ASTNode> {
-        let mut idx = 0;
+    pub fn parse(&mut self) -> Result<AST, bool> {
+        let mut nodes_stack: Vec<Vec<ASTNode>> = vec![Vec::new()];
 
-        while idx < self.tokens.len() {
-            match self.tokens[idx] {
-                Token::IncPtr    => self.nodes.push(ASTNode::IncPtrNode),
-                Token::DecPtr    => self.nodes.push(ASTNode::DecPtrNode),
-                Token::IncVal    => self.nodes.push(ASTNode::IncValNode),
-                Token::DecVal    => self.nodes.push(ASTNode::DecValNode),
-                Token::Output    => self.nodes.push(ASTNode::OutputNode),
-                Token::Input     => self.nodes.push(ASTNode::InputNode),
+        for token in &self.tokens {
+            match token {
+                Token::IncPtr    => nodes_stack.last_mut().unwrap().push(ASTNode::IncPtrNode),
+                Token::DecPtr    => nodes_stack.last_mut().unwrap().push(ASTNode::DecPtrNode),
+                Token::IncVal    => nodes_stack.last_mut().unwrap().push(ASTNode::IncValNode),
+                Token::DecVal    => nodes_stack.last_mut().unwrap().push(ASTNode::DecValNode),
+                Token::Output    => nodes_stack.last_mut().unwrap().push(ASTNode::OutputNode),
+                Token::Input     => nodes_stack.last_mut().unwrap().push(ASTNode::InputNode),
                 Token::LoopStart => {
-                    idx += 1;
-
-                    let mut loop_tokens: Vec<Token> = Vec::new();
-                    let mut loop_level = 1;
-
-                    while idx < self.tokens.len() && loop_level > 0 {
-                        match self.tokens[idx] {
-                            Token::LoopStart => loop_level += 1,
-                            Token::LoopEnd => loop_level -= 1,
-                            token => loop_tokens.push(token),
-                        };
-                        idx += 1;
-                    }
-
-                    let mut loop_parser = Parser::new(self.mode, loop_tokens);
-                    self.nodes.push(ASTNode::Loop(loop_parser.parse()))
-                }
-                Token::LoopEnd => panic!("Unexpected Loop end symbol."),
-            };
-
-            idx += 1
+                    nodes_stack.push(Vec::new());
+                },
+                Token::LoopEnd => {
+                    let loop_nodes = nodes_stack.pop().unwrap();
+                    let loop_node = ASTNode::Loop(loop_nodes);
+                    nodes_stack.last_mut().unwrap().push(loop_node);
+                },
+            }
         }
+
+        self.program.body = nodes_stack.pop().unwrap();
 
         if self.mode == CompilerMode::Debug {
             self.print();
         }
 
-        return self.nodes.clone();
+        Ok(self.program.clone())
     }
 
     pub fn print(&mut self) {
-        for node in &self.nodes {
+        println!("\nNodes:");
+        for node in &self.program.body {
             println!("{}", node)
         }
     }
