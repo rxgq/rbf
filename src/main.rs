@@ -16,27 +16,12 @@ mod ast_node;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    if args.len() == 1 {
+    if args.len() < 3 {
         eprintln!("Run with: cargo run <path> <mode>");
         return;
     }
 
-    let file_path = match args.get(1) {
-        Some(path) => path,
-        None => {
-            eprintln!("Source code path was not provided");
-            return;
-        }
-    };
-
-    let mode = match args.get(2) {
-        Some(mode) => map_compiler_mode(mode.clone()),
-        None => {
-            eprintln!("Compiler mode not provided");
-            return;
-        }
-    };
+    let (file_path, mode) = (args[1].as_str(), map_compiler_mode(args[2].clone()));
 
     let source = fs::read_to_string(file_path)
         .expect("Error reading file.");
@@ -57,11 +42,12 @@ fn main() {
     };
 
     let options = CompilerOptions {
-
+        output_path: String::from("C:\\Users\\rxgqq\\projects\\rbf\\example\\out.asm")
     };
     
     let compiler = Compiler::new(options, ast);
-    compiler.compile();
-
-
+    compiler.compile().unwrap_or_else(|_| {
+        eprintln!("Compilation failed.");
+        return;
+    });
 }
