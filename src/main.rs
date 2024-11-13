@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 
 mod lexer;
+mod ast;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -18,9 +19,13 @@ fn main() {
         .expect("Error reading file.");
 
     let tokens = lexer::tokenize(source);
-    for token in tokens {
+    for token in &tokens {
         println!("{}", token);
     }
 
-    
+    let ast = ast::parse(tokens);
+    // for node in ast {
+    //     println!("{:?}", node);
+    // }
+
 }

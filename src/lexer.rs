@@ -1,5 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
+#[derive(Copy, Clone)]
 pub enum Token {
     IncPtr,
     DecPtr,
@@ -14,14 +15,14 @@ pub enum Token {
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         return match self {
-            Self::IncPtr    => write!(f, "IncPtr"),
-            Self::DecPtr    => write!(f, "DecPtr"),
-            Self::IncVal    => write!(f, "IncVal"),
-            Self::DecVal    => write!(f, "DecVal"),
-            Self::Output    => write!(f, "Output"),
-            Self::Input     => write!(f, "Input"),
-            Self::LoopStart => write!(f, "LoopStart"),
-            Self::LoopEnd   => write!(f, "LoopEnd"),
+            Self::IncPtr    => write!(f, "IncPtr    '>'"),
+            Self::DecPtr    => write!(f, "DecPtr    '<'"),
+            Self::IncVal    => write!(f, "IncVal    '+'"),
+            Self::DecVal    => write!(f, "DecVal    '-'"),
+            Self::Output    => write!(f, "Output    '.'"),
+            Self::Input     => write!(f, "Input     ','"),
+            Self::LoopStart => write!(f, "LoopStart '['"),
+            Self::LoopEnd   => write!(f, "LoopEnd   ']'"),
         };
     }
 }
@@ -29,8 +30,21 @@ impl Display for Token {
 pub fn tokenize(source: String) -> Vec<Token> {
     let mut tokens: Vec<Token> = Vec::new();
     
-    for c in source.chars() {
-        let token = match c {
+    let mut chars = source.chars().peekable();
+
+    while let Some(char) = chars.next() {
+        if char == '#' {
+            while let Some(&next_char) = chars.peek() {
+                if next_char == '\n' {
+                    chars.next();
+                    break;
+                }
+                chars.next();
+            }
+            continue;
+        }
+
+        let token = match char {
             '>' => Token::IncPtr,
             '<' => Token::DecPtr,
             '+' => Token::IncVal,
@@ -39,11 +53,13 @@ pub fn tokenize(source: String) -> Vec<Token> {
             ',' => Token::Input,
             '[' => Token::LoopStart,
             ']' => Token::LoopEnd,
-            _ => todo!()
+            _ => continue,
         };
 
         tokens.push(token);
     }
+
+    
 
     return tokens;
 }
