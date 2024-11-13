@@ -1,5 +1,12 @@
 use core::panic;
-use crate::lexer::Token;
+
+use crate::token::Token;
+
+#[derive(Copy, Clone)]
+pub enum ParserMode {
+    Debug,
+    Normal
+}
 
 pub enum ASTNode {
     IncPtrNode,
@@ -12,12 +19,16 @@ pub enum ASTNode {
 }
 
 pub struct Parser {
+    mode: ParserMode,
     tokens: Vec<Token>,
 }
 
 impl Parser {
-    pub fn new(tokens: Vec<Token>) -> Parser {
-        Parser { tokens }
+    pub fn new(mode: ParserMode, tokens: Vec<Token>) -> Parser {
+        Parser { 
+            mode,
+            tokens 
+        }
     }
 
     pub fn parse(&self) -> Vec<ASTNode> {
@@ -47,7 +58,7 @@ impl Parser {
                         idx += 1;
                     }
 
-                    let loop_parser = Parser::new(loop_tokens);
+                    let loop_parser = Parser::new(self.mode, loop_tokens);
                     nodes.push(ASTNode::Loop(loop_parser.parse()));
                 }
                 Token::LoopEnd => panic!("Unexpected Loop end symbol."),
@@ -59,7 +70,7 @@ impl Parser {
         nodes
     }
 
-    pub fn print(&self) {
+    // pub fn print(&self) {
         
-    }
+    // }
 }

@@ -1,47 +1,32 @@
-use std::fmt::{self, Display, Formatter};
+use crate::token::Token;
+use crate::token::LexerDefect;
 
-#[derive(Copy, Clone)]
-pub enum Token {
-    IncPtr,
-    DecPtr,
-    IncVal,
-    DecVal,
-    Output,
-    Input,
-    LoopStart,
-    LoopEnd
-}
-
-
-impl Display for Token {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        return match self {
-            Self::IncPtr    => write!(f, "IncPtr    '>'"),
-            Self::DecPtr    => write!(f, "DecPtr    '<'"),
-            Self::IncVal    => write!(f, "IncVal    '+'"),
-            Self::DecVal    => write!(f, "DecVal    '-'"),
-            Self::Output    => write!(f, "Output    '.'"),
-            Self::Input     => write!(f, "Input     ','"),
-            Self::LoopStart => write!(f, "LoopStart '['"),
-            Self::LoopEnd   => write!(f, "LoopEnd   ']'"),
-        };
-    }
+#[derive(PartialEq)]
+pub enum LexerMode {
+    Debug,
+    Normal
 }
 
 pub struct Lexer {
+    mode: LexerMode,
     source: String,
-    tokens: Vec<Token>
+    line: i32,
+    tokens: Vec<Token>,
+    pub defects: Vec<LexerDefect>
 }
 
 impl Lexer {
-    pub fn new(source: String) -> Lexer {
+    pub fn new(mode: LexerMode, source: String) -> Lexer {
         Lexer {
+            mode,
             source,
-            tokens: Vec::new()
+            line: 1,
+            tokens: Vec::new(),
+            defects: Vec::new()
         }
     }
 
-    pub fn tokenize(&self) -> Vec<Token> {
+    pub fn tokenize(&mut self) -> Vec<Token> {
         let mut tokens: Vec<Token> = Vec::new();
         
         let mut chars = self.source.chars().peekable();
@@ -57,7 +42,7 @@ impl Lexer {
                 }
                 continue;
             }
-    
+
             let token = match char {
                 '>' => Token::IncPtr,
                 '<' => Token::DecPtr,
@@ -67,15 +52,28 @@ impl Lexer {
                 ',' => Token::Input,
                 '[' => Token::LoopStart,
                 ']' => Token::LoopEnd,
-                _ => continue,
+
+                '\r' | ' ' => continue,
+                '\n' => {
+                    self.line += 1;
+                    continue;
+                }
+                _   => {
+                    self.defects.push(LexerDefect::InvalidSyntax(self.line, char));
+                    continue;
+                },
             };
-    
+
             tokens.push(token);
         }
-    
-        
-    
-        return tokens;
+
+        self.tokens = tokens;
+
+        if self.mode == LexerMode::Debug {
+            self.print();
+        }
+
+        return self.tokens.clone();
     }
     
     pub fn print(&self) {
