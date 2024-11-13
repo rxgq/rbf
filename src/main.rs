@@ -50,6 +50,8 @@ fn main() {
         }
     };
 
+    return;
+
     let mut parser = Parser::new(mode, tokens);
     let ast = match parser.parse() {
         Ok(ast) => ast,

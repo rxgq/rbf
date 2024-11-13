@@ -36,9 +36,11 @@ impl Lexer {
 
     pub fn tokenize(&mut self) -> Result<Vec<Token>, bool> {
         let mut tokens: Vec<Token> = Vec::new();
-        
         let mut chars = self.source.chars().peekable();
+
         let mut previous_char = None;
+        let mut current_line_length = 0;
+        let mut line_length_warned = false;
 
         while let Some(char) = chars.next() {
             if char == '#' {
@@ -50,6 +52,11 @@ impl Lexer {
                     chars.next();
                 }
                 continue;
+            }
+
+            if current_line_length > 31 && !line_length_warned {
+                self.warnings.push(LexerWarning::CharacterLineWarning(self.line));
+                line_length_warned = true;
             }
 
             let token = match char {
@@ -75,6 +82,8 @@ impl Lexer {
                 '\r' | ' ' => continue,
                 '\n' => {
                     self.line += 1;
+                    current_line_length = 0;
+                    line_length_warned = false;
                     continue;
                 }
                 _   => {
@@ -85,6 +94,7 @@ impl Lexer {
 
             tokens.push(token);
             previous_char = Some(char);
+            current_line_length += 1;
         }
 
         self.tokens = tokens;

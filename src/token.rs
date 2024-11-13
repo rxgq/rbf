@@ -28,13 +28,15 @@ impl Display for Token {
 }
 
 pub enum LexerWarning {
-    EmptyLoopWarning(u32)
+    EmptyLoopWarning(u32),
+    CharacterLineWarning(u32)
 }
 
 impl Display for LexerWarning {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         return match self {
-            Self::EmptyLoopWarning(line) => write!(f, "WARNING: Empty loop on line {}", line),
+            Self::EmptyLoopWarning(line)     => write!(f, "WARNING: Empty loop on line {}", line),
+            Self::CharacterLineWarning(line) => write!(f, "WARNING: Line {} is above 32 characters. Try splitting it up to preserve readability", line),
         };
     }
 }

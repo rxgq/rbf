@@ -11,27 +11,31 @@ pub enum ASTNode {
     Loop(Vec<ASTNode>),
 }
 
-impl Display for ASTNode {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl ASTNode {
+    fn fmt_with_indent(&self, f: &mut Formatter<'_>, depth: usize) -> fmt::Result {
+        let indent = "  ".repeat(depth);
         match self {
-            Self::IncPtrNode  => write!(f, "Node(>)"),
-            Self::DecPtrNode  => write!(f, "Node(<)"),
-            Self::IncValNode  => write!(f, "Node(+)"),
-            Self::DecValNode  => write!(f, "Node(-)"),
-            Self::OutputNode  => write!(f, "Node(.)"),
-            Self::InputNode   => write!(f, "Node(,)"),
+            Self::IncPtrNode => write!(f, "{}Node(>)", indent),
+            Self::DecPtrNode => write!(f, "{}Node(<)", indent),
+            Self::IncValNode => write!(f, "{}Node(+)", indent),
+            Self::DecValNode => write!(f, "{}Node(-)", indent),
+            Self::OutputNode => write!(f, "{}Node(.)", indent),
+            Self::InputNode  => write!(f, "{}Node(,)", indent),
             Self::Loop(nodes) => {
-                write!(f, "Loop(")?;
-
-                for (i, node) in nodes.iter().enumerate() {
-                    if i > 0 {
-                        write!(f, ", ")?;
-                    }
-                    write!(f, "{}", node)?;
+                writeln!(f, "{}Loop(", indent)?;
+                for node in nodes {
+                    node.fmt_with_indent(f, depth + 1)?;
+                    writeln!(f)?;
                 }
-                write!(f, ")")
+                write!(f, "{})", indent)
             }
         }
+    }
+}
+
+impl Display for ASTNode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.fmt_with_indent(f, 0) 
     }
 }
 
