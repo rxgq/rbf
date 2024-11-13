@@ -67,8 +67,6 @@ impl Lexer {
             tokens.push(token);
         }
 
-        self.tokens = tokens;
-
         if self.mode == LexerMode::Debug {
             self.print();
         }
