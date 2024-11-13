@@ -1,7 +1,3 @@
-pub struct BrainfuckCompiler {
+pub fn compiler() {
 
-}
-
-impl BrainfuckCompiler { 
-    
 }
