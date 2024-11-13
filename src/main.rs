@@ -1,6 +1,9 @@
 use std::env;
 use std::fs;
 
+use lexer::Lexer;
+use ast::Parser;
+
 mod lexer;
 mod ast;
 
@@ -18,14 +21,11 @@ fn main() {
     let source = fs::read_to_string(file_path)
         .expect("Error reading file.");
 
-    let tokens = lexer::tokenize(source);
-    for token in &tokens {
-        println!("{}", token);
-    }
+    let lexer = Lexer::new(source);
+    let tokens = lexer.tokenize();
+    lexer.print();
 
-    let ast = ast::parse(tokens);
-    // for node in ast {
-    //     println!("{:?}", node);
-    // }
+    let parser = Parser::new(tokens);
+    let ast = parser.parse();
 
 }

@@ -12,6 +12,7 @@ pub enum Token {
     LoopEnd
 }
 
+
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         return match self {
@@ -27,39 +28,59 @@ impl Display for Token {
     }
 }
 
-pub fn tokenize(source: String) -> Vec<Token> {
-    let mut tokens: Vec<Token> = Vec::new();
-    
-    let mut chars = source.chars().peekable();
+pub struct Lexer {
+    source: String,
+    tokens: Vec<Token>
+}
 
-    while let Some(char) = chars.next() {
-        if char == '#' {
-            while let Some(&next_char) = chars.peek() {
-                if next_char == '\n' {
-                    chars.next();
-                    break;
-                }
-                chars.next();
-            }
-            continue;
+impl Lexer {
+    pub fn new(source: String) -> Lexer {
+        Lexer {
+            source,
+            tokens: Vec::new()
         }
-
-        let token = match char {
-            '>' => Token::IncPtr,
-            '<' => Token::DecPtr,
-            '+' => Token::IncVal,
-            '-' => Token::DecVal,
-            '.' => Token::Output,
-            ',' => Token::Input,
-            '[' => Token::LoopStart,
-            ']' => Token::LoopEnd,
-            _ => continue,
-        };
-
-        tokens.push(token);
     }
 
+    pub fn tokenize(&self) -> Vec<Token> {
+        let mut tokens: Vec<Token> = Vec::new();
+        
+        let mut chars = self.source.chars().peekable();
     
-
-    return tokens;
+        while let Some(char) = chars.next() {
+            if char == '#' {
+                while let Some(&next_char) = chars.peek() {
+                    if next_char == '\n' {
+                        chars.next();
+                        break;
+                    }
+                    chars.next();
+                }
+                continue;
+            }
+    
+            let token = match char {
+                '>' => Token::IncPtr,
+                '<' => Token::DecPtr,
+                '+' => Token::IncVal,
+                '-' => Token::DecVal,
+                '.' => Token::Output,
+                ',' => Token::Input,
+                '[' => Token::LoopStart,
+                ']' => Token::LoopEnd,
+                _ => continue,
+            };
+    
+            tokens.push(token);
+        }
+    
+        
+    
+        return tokens;
+    }
+    
+    pub fn print(&self) {
+        for token in &self.tokens {
+            println!("{}", token);
+        }
+    }
 }
