@@ -1,12 +1,6 @@
 use core::panic;
 
-use crate::token::Token;
-
-#[derive(Copy, Clone)]
-pub enum ParserMode {
-    Debug,
-    Normal
-}
+use crate::{lexer::CompilerMode, token::Token};
 
 pub enum ASTNode {
     IncPtrNode,
@@ -19,12 +13,12 @@ pub enum ASTNode {
 }
 
 pub struct Parser {
-    mode: ParserMode,
+    mode: CompilerMode,
     tokens: Vec<Token>,
 }
 
 impl Parser {
-    pub fn new(mode: ParserMode, tokens: Vec<Token>) -> Parser {
+    pub fn new(mode: CompilerMode, tokens: Vec<Token>) -> Parser {
         Parser { 
             mode,
             tokens 

@@ -35,8 +35,8 @@ pub enum LexerDefect {
 impl Display for LexerDefect {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         return match self {
-            Self::InvalidSyntax(line, char) => write!(f, "Invalid syntax character: '{}' on line {}", char, line),
-            Self::UnmatchedLoopSymbol(line) => write!(f, "Unmatched loop symbol on line {}", line),
+            Self::InvalidSyntax(line, char) => write!(f, "ERROR: Invalid syntax character: '{}' on line {}", char, line),
+            Self::UnmatchedLoopSymbol(line) => write!(f, "ERROR: Unmatched loop symbol on line {}", line),
         };
     }
 }

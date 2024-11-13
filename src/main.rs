@@ -2,18 +2,22 @@ use std::env;
 use std::fs;
 
 use lexer::Lexer;
-use lexer::LexerMode;
-
 use parser::Parser;
-use parser::ParserMode;
+use utils::map_compiler_mode;
 
 mod lexer;
 mod parser;
 mod token;
 mod compiler;
+mod utils;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+
+    if args.len() == 1 {
+        eprintln!("Run with: cargo run <path> <mode>");
+        return;
+    }
 
     let file_path = match args.get(1) {
         Some(path) => path,
@@ -23,19 +27,24 @@ fn main() {
         }
     };
 
+    let mode = match args.get(2) {
+        Some(mode) => map_compiler_mode(mode.clone()),
+        None => {
+            eprintln!("Compiler mode not provided");
+            return;
+        }
+    };
+
     let source = fs::read_to_string(file_path)
         .expect("Error reading file.");
 
-    let mut lexer = Lexer::new(LexerMode::Debug, source);
-    let tokens = lexer.tokenize();
+    let mut lexer = Lexer::new(mode, source);
+    let tokens = match lexer.tokenize() {
+        Ok(tokens) => tokens,
+        Err(_) => return
+    };
 
-    if !lexer.defects.is_empty() {
-        for defect in lexer.defects {
-            println!("{}", defect)
-        }
-    }
-
-    let parser = Parser::new(ParserMode::Debug, tokens);
+    let parser = Parser::new(mode, tokens);
     parser.parse();
     
 }
