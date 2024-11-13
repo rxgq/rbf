@@ -50,15 +50,16 @@ fn main() {
         }
     };
 
-    return;
-
     let mut parser = Parser::new(mode, tokens);
     let ast = match parser.parse() {
         Ok(ast) => ast,
         Err(_)    => return
     };
 
-    let options = CompilerOptions {};
+    let options = CompilerOptions {
+
+    };
+    
     let compiler = Compiler::new(options, ast);
     compiler.compile();
 

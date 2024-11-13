@@ -20,7 +20,7 @@ impl Compiler {
 
     pub fn compile(&self) {
         for node in &self.ast.body {
-
+            println!("{}", node);
         }
     }
 } 
