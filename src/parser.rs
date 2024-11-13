@@ -1,42 +1,34 @@
 use core::panic;
 
-use crate::{lexer::CompilerMode, token::Token};
+use crate::{ast_node::ASTNode, lexer::CompilerMode, token::Token};
 
-pub enum ASTNode {
-    IncPtrNode,
-    DecPtrNode,
-    IncValNode,
-    DecValNode,
-    InputNode,
-    OutputNode,
-    Loop(Vec<ASTNode>),
-}
 
 pub struct Parser {
     mode: CompilerMode,
     tokens: Vec<Token>,
+    nodes: Vec<ASTNode>
 }
 
 impl Parser {
     pub fn new(mode: CompilerMode, tokens: Vec<Token>) -> Parser {
         Parser { 
             mode,
-            tokens 
+            tokens,
+            nodes: Vec::new()
         }
     }
 
-    pub fn parse(&self) -> Vec<ASTNode> {
-        let mut nodes: Vec<ASTNode> = Vec::new();
+    pub fn parse(&mut self) -> Vec<ASTNode> {
         let mut idx = 0;
 
         while idx < self.tokens.len() {
             match self.tokens[idx] {
-                Token::IncPtr => nodes.push(ASTNode::IncPtrNode),
-                Token::DecPtr => nodes.push(ASTNode::DecPtrNode),
-                Token::IncVal => nodes.push(ASTNode::IncValNode),
-                Token::DecVal => nodes.push(ASTNode::DecValNode),
-                Token::Output => nodes.push(ASTNode::OutputNode),
-                Token::Input => nodes.push(ASTNode::InputNode),
+                Token::IncPtr    => self.nodes.push(ASTNode::IncPtrNode),
+                Token::DecPtr    => self.nodes.push(ASTNode::DecPtrNode),
+                Token::IncVal    => self.nodes.push(ASTNode::IncValNode),
+                Token::DecVal    => self.nodes.push(ASTNode::DecValNode),
+                Token::Output    => self.nodes.push(ASTNode::OutputNode),
+                Token::Input     => self.nodes.push(ASTNode::InputNode),
                 Token::LoopStart => {
                     idx += 1;
 
@@ -52,19 +44,25 @@ impl Parser {
                         idx += 1;
                     }
 
-                    let loop_parser = Parser::new(self.mode, loop_tokens);
-                    nodes.push(ASTNode::Loop(loop_parser.parse()));
+                    let mut loop_parser = Parser::new(self.mode, loop_tokens);
+                    self.nodes.push(ASTNode::Loop(loop_parser.parse()))
                 }
                 Token::LoopEnd => panic!("Unexpected Loop end symbol."),
             };
 
-            idx += 1;
+            idx += 1
         }
 
-        nodes
+        if self.mode == CompilerMode::Debug {
+            self.print();
+        }
+
+        return self.nodes.clone();
     }
 
-    // pub fn print(&self) {
-        
-    // }
+    pub fn print(&mut self) {
+        for node in &self.nodes {
+            println!("{}", node)
+        }
+    }
 }

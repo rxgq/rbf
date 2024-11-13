@@ -10,6 +10,7 @@ mod parser;
 mod token;
 mod compiler;
 mod utils;
+mod ast_node;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -41,10 +42,10 @@ fn main() {
     let mut lexer = Lexer::new(mode, source);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
-        Err(_) => return
+        Err(_)     => return
     };
 
-    let parser = Parser::new(mode, tokens);
+    let mut parser = Parser::new(mode, tokens);
     parser.parse();
     
 }
