@@ -36,7 +36,7 @@ impl Display for LexerWarning {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         return match self {
             Self::EmptyLoopWarning(line)     => write!(f, "WARNING: Empty loop on line {}", line),
-            Self::CharacterLineWarning(line) => write!(f, "WARNING: Line {} is above 32 characters. Try splitting it up to preserve readability", line),
+            Self::CharacterLineWarning(line) => write!(f, "WARNING: Line {} is above 64 characters. Try shortening it up to preserve readability", line),
         };
     }
 }

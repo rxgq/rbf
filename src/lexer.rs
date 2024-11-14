@@ -54,7 +54,7 @@ impl Lexer {
                 continue;
             }
 
-            if current_line_length > 31 && !line_length_warned {
+            if current_line_length > 63 && !line_length_warned {
                 self.warnings.push(LexerWarning::CharacterLineWarning(self.line));
                 line_length_warned = true;
             }

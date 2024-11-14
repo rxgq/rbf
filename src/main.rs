@@ -15,6 +15,8 @@ mod utils;
 mod ast_node;
 
 fn main() {
+    let output_path: String = String::from("C:\\Users\\rxgqq\\projects\\rbf\\example\\out.asm");
+
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
         eprintln!("Run with: cargo run <path> <mode>");
@@ -42,7 +44,7 @@ fn main() {
     };
 
     let options = CompilerOptions {
-        output_path: String::from("C:\\Users\\rxgqq\\projects\\rbf\\example\\out.asm")
+        output_path: output_path
     };
     
     let compiler = Compiler::new(options, ast);
@@ -50,4 +52,6 @@ fn main() {
         eprintln!("Compilation failed.");
         return;
     });
+
+    println!("\nCompilation finished.");
 }
