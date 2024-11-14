@@ -8,7 +8,7 @@ pub enum ASTNode {
     DecValNode,
     InputNode,
     OutputNode,
-    Loop(Vec<ASTNode>),
+    LoopNode(Vec<ASTNode>),
 }
 
 impl ASTNode {
@@ -21,7 +21,7 @@ impl ASTNode {
             Self::DecValNode => write!(f, "{}Node(-)", indent),
             Self::OutputNode => write!(f, "{}Node(.)", indent),
             Self::InputNode  => write!(f, "{}Node(,)", indent),
-            Self::Loop(nodes) => {
+            Self::LoopNode(nodes) => {
                 writeln!(f, "{}Loop(", indent)?;
                 for node in nodes {
                     node.fmt_with_indent(f, depth + 1)?;

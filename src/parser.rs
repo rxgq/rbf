@@ -32,7 +32,7 @@ impl Parser {
                 },
                 Token::LoopEnd => {
                     let loop_nodes = nodes_stack.pop().unwrap();
-                    let loop_node = ASTNode::Loop(loop_nodes);
+                    let loop_node = ASTNode::LoopNode(loop_nodes);
                     nodes_stack.last_mut().unwrap().push(loop_node);
                 },
             }
